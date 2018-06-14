@@ -8,6 +8,6 @@
 	
 </head>
 <body>
-	<a href="/hellow">Hellow ? </a>
+	<a href="/sbtry/hellow">Hellow ? </a>
 </body>
 </html>
