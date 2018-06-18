@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.topel.api.member.dao.MemberDao">
+	<!-- 로그인 -->
+
+	<insert id="addMember" parameterType="Map"  >
+	
+		<selectKey resultType="int" keyProperty="pageSeq" order="BEFORE">	 	
+			SELECT IFNULL(MAX(PAGE_SEQ),0)+1 FROM PAGE_MST
+    	</selectKey>
+		INSERT INTO PAGE_MST(NS, ID, TITLE, PAGE_SEQ) 
+		VALUES (
+			 #{ns}
+			,'${id}'
+			,#{title}			
+			,#{pageSeq}
+		);
+		    				
+	</insert>
+
+</mapper>
