@@ -1,6 +1,5 @@
 package com.sts.pjtry.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,29 +28,14 @@ public class CommService {
 
 	public Map<String, Object> savePage(Map<String, Object> paramMap) {
 		Map<String, Object> rtnmap = new HashMap<String, Object>();
-		List<Map<String, Object>> pageList = (List<Map<String, Object>>) paramMap.get("rtnList");
-		List<Map<String, Object>> pageRtnList = new ArrayList();
-		int pageSeq =0;
-		System.out.println(pageList.size());
+		List<Map> pageList = (List<Map>) paramMap.get("rtnList");
+		
 		for(int i=0;i<pageList.size();i++) {
 			Map<String, Object> pageRtnMap = new HashMap<String, Object>();
-			Map<String, Object> itemMap = pageList.get(i);
-			
-			Map<String, Object> pageMap = (Map<String, Object>) itemMap.get("page");
-			System.out.println(pageMap.get("revision"));
-			
-			
-			
-			//pageMap.get("")
-			
-			try {
-				//pageSeq =  commMapper.savePage(pageMap);	
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-					
+			Map<String, Object> pageMap = pageList.get(i);
+			int pageSeq =  commMapper.savePage(pageMap);			
 			pageRtnMap.put("pageSeq", pageSeq);
-			pageRtnList.add(pageRtnMap);
+			pageList.add(pageRtnMap);
 		}
 		rtnmap.put("pageList",pageList);
 		return rtnmap;
