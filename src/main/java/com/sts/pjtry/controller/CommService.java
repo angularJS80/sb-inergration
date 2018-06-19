@@ -36,9 +36,9 @@ public class CommService {
 		for(int i=0;i<pageList.size();i++) {
 			Map<String, Object> pageRtnMap = new HashMap<String, Object>();
 			Map<String, Object> itemMap = pageList.get(i);
-			List<Map<String, Object>> pageMapList = (List<Map<String, Object>> ) itemMap.get("page");
+			Map<String, Object> pageMap = (Map<String, Object>) itemMap.get("page");
 			
-			System.out.println(pageMapList);
+			System.out.println(pageMap.get("revision"));
 			//pageMap.get("")
 			
 			try {
