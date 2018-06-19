@@ -29,7 +29,7 @@ public class CommController {
     public String readExcel( @RequestParam("file") MultipartFile file) {
     	Map<String, Object> rtnMap = new HashMap<String, Object>();
     	rtnMap.put("parseResult", TextUtil.readXml(file));    	
-    	commService.savePage(rtnMap);
+    	commService.savePage((Map<String, Object>) rtnMap.get("parseResult"));
     	return gson.toJson(rtnMap);
     }
 	
