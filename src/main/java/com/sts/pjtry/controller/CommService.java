@@ -39,13 +39,9 @@ public class CommService {
 			Map<String, Object> pageMap = (Map<String, Object>) itemMap.get("page");
 			
 			System.out.println(pageMap.get("revision"));
-			//pageMap.get("")
-			
-			try {
-				//pageSeq =  commMapper.savePage(pageMap);	
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		
+				pageSeq =  commMapper.savePage(pageMap);	
+		
 					
 			pageRtnMap.put("pageSeq", pageSeq);
 			pageRtnList.add(pageRtnMap);
