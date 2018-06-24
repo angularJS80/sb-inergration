@@ -40,20 +40,11 @@ public class DataSourceConfiguration {
     
     	DataSource ds = null;
 
-			System.out.println("JDBC LOOK UP Fail Start Load spring.datasource.main.url");
-			
-			DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-			
-			String dsUrl = PropUtil.getInstance().getValues("application.properties", "spring.datasource.main.url");
-			String dsUserName = PropUtil.getInstance().getValues("application.properties", "spring.datasource.main.username");
-			String dsPassWord = PropUtil.getInstance().getValues("application.properties", "spring.datasource.main.password");
-			String dsdriverClassName = PropUtil.getInstance().getValues("application.properties", "spring.datasource.main.driverClassName");
-			
-			dataSourceBuilder.url(dsUrl);
-		    dataSourceBuilder.username(dsUserName);
-		    dataSourceBuilder.password(dsPassWord);
-		    dataSourceBuilder.driverClassName(dsdriverClassName);
-		    ds =  dataSourceBuilder.build();
+    	String jndiName = PropUtil.getInstance().getValues("application.properties", "spring.datasource.main.jndi-name");
+		
+		JndiDataSourceLookup lookup = new JndiDataSourceLookup();
+		ds = lookup.getDataSource(jndiName);	
+		
 		
     	
     	logger.debug("> dataSource " + ds);

@@ -31,7 +31,13 @@ public class TextUtil {
 				if("</page>".equals(line.trim())) {										
 					JSONObject xmlJSONObj = XML.toJSONObject(parseResult);
 					//System.out.println(xmlJSONObj.toString());
+					
+					
 					HashMap<String,Object> hashMap = (HashMap<String,Object>)gson.fromJson(xmlJSONObj.toString(), HashMap.class);
+					
+					
+					
+					
 					list.add(hashMap);
 					parseResult= new String();
 					System.out.println(hashMap);
