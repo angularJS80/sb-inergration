@@ -25,22 +25,26 @@ public class TextUtil {
 		
 	    try {
 			sc = new Scanner(file.getInputStream(), "UTF-8");
+			Boolean lineaddOn = false;
 		    while (sc.hasNextLine()) {
 		        String line = sc.nextLine();
-		        parseResult+=line;
+		        
+		        
+		        if(line.indexOf("<page>")>0) {	
+		        		lineaddOn = true;
+		        }
+		        if(lineaddOn) {
+		        	parseResult = parseResult + line;
+		        }
+		        
 				if("</page>".equals(line.trim())) {										
 					JSONObject xmlJSONObj = XML.toJSONObject(parseResult);
 					//System.out.println(xmlJSONObj.toString());
-					
-					
 					HashMap<String,Object> hashMap = (HashMap<String,Object>)gson.fromJson(xmlJSONObj.toString(), HashMap.class);
-					
-					
-					
-					
 					list.add(hashMap);
 					parseResult= new String();
 					System.out.println(hashMap);
+					lineaddOn = false;
 				}
 				
 		        

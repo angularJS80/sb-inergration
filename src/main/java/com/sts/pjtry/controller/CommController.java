@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sts.pjtry.util.TaskUtil;
 import com.sts.pjtry.util.TextUtil;
 
 @Controller
@@ -28,8 +29,20 @@ public class CommController {
     @ResponseBody
     public String readExcel( @RequestParam("file") MultipartFile file) {
     	Map<String, Object> rtnMap = new HashMap<String, Object>();
-    	rtnMap.put("parseResult", TextUtil.readXml(file));    	
-    	commService.savePage((Map<String, Object>) rtnMap.get("parseResult"));
+    
+    	
+    	//rtnMap.put("parseResult", TextUtil.readXml(file));
+    //	commService.savePage((Map<String, Object>) rtnMap.get("parseResult"));
+    	TaskUtil taskUtil = new TaskUtil(file);
+    //	TaskUtil taskUtil = new TaskUtil(10);
+    	
+    	taskUtil.start();   
+    	
+    	
+    	
+    	
+    	
+    	
     	return gson.toJson(rtnMap);
     }
 	

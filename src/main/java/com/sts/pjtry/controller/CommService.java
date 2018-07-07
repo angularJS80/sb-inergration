@@ -8,11 +8,13 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sts.pjtry.util.TaskUtil;
 
 
 @Service
@@ -26,8 +28,9 @@ public class CommService {
 	private CommMapper commMapper;
 	public static Gson gson = new GsonBuilder().serializeNulls().setDateFormat("yyyy-MM-dd HH:mm:ss.SSS").create(); 
 	
-
+	
 	public Map<String, Object> savePage(Map<String, Object> paramMap) {
+		
 		Map<String, Object> rtnmap = new HashMap<String, Object>();
 		List<Map<String, Object>> pageList = (List<Map<String, Object>>) paramMap.get("rtnList");
 		List<Map<String, Object>> pageRtnList = new ArrayList();
@@ -37,7 +40,6 @@ public class CommService {
 			Map<String, Object> pageRtnMap = new HashMap<String, Object>();
 			Map<String, Object> itemMap = pageList.get(i);
 			Map<String, Object> pageMap = (Map<String, Object>) itemMap.get("page");
-			
 			System.out.println(pageMap.get("revision"));
 		
 				pageSeq =  commMapper.savePage(pageMap);	
