@@ -54,27 +54,93 @@ public class IntegrationConfig{
 	        factory.setSoTimeout(10000);
 	        factory.setSerializer(new ByteArrayLfSerializer());
 	        factory.setDeserializer(new ByteArrayLfSerializer());
+	        
 		}
 	        return factory;   
 	}
+	
 	/*게이트웨이를 통한 수발신 설*/
 	@Bean
     public TcpInboundGateway gatewayCrLf() {
         TcpInboundGateway gateway = new TcpInboundGateway();
         gateway.setConnectionFactory(serverCF());
-        gateway.setRequestChannel(checkChannel());
-        gateway.setReplyChannel(inputTaskChannel());
-      
+        gateway.setRequestChannel(reqChannel());
+        gateway.setReplyChannel(repChannel());
+        
         gateway.setTaskScheduler(taskScheduler);
         return gateway;
     }
+	
+	/*게이트웨이 수신될 메시지의 채널 형태*/
+    @Bean
+    public MessageChannel reqChannel() {
+        //return new DirectChannel(); // p2p channel
+        return new PublishSubscribeChannel(); // p2p channel
+        
+    }
+    /*게이트웨이 리플될 메시지의 채널 형태 */
+    @Bean
+    public MessageChannel repChannel() {
+        //return new DirectChannel(); // p2p channel
+        return new PublishSubscribeChannel(); // p2p channel
+    }
+    /*실수행 타스크 채널 형*/
+    @Bean
+    public MessageChannel taskChannel() {
+        return new DirectChannel(); // p2p channel
+    }
+    
+    /*req받아서 rep 제공 */
+	@Transformer(inputChannel="reqChannel", outputChannel="repChannel")
+	public String convert(byte[] bytes) {
+		String result = new String(bytes);
+		System.out.println("convert. result: " + result);
+		return result;
+		
+	}    
+	
+	/*rep 받아서 타스크 채널에 타스크 제*/
+	@ServiceActivator(inputChannel="repChannel",outputChannel="taskChannel")
+	public Runnable makeTask(String str) {	
+		Runnable runnable = new Runnable() {
+			
+			@Override
+			public void run() {
+				for(int i=0;i<5;i++) {
+					System.out.println("i running taskSc: " + str);
+				}
+				
+			}
+		};
+		
+		return runnable;
+	}
+	
+	/*타스크 채널을 통해서 받은 타스크를 실행한다. */
+	@ServiceActivator(inputChannel="taskChannel")
+	public void taskRunner(Runnable runnable) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());	
+		c.add(Calendar.MILLISECOND, 200); // 동시 발송시 1초식 딜레이를 준다 교착상태 방지용 
+		taskScheduler.schedule(runnable,c.getTime());	
+		//return str;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/*이하 어뎁터를 통한 방법 등에 대한 주석 처리 */
 	
 	
 	/* 수신 어뎁터를 컨넥션에 세팅해줌으로서 채널 수신  역활을 어뎁터가 한다.  
 	@Bean
 	public TcpReceivingChannelAdapter inboundAdapter() {
 		TcpReceivingChannelAdapter adapter = new TcpReceivingChannelAdapter();
-		adapter.setOutputChannel(checkChannel());
+		adapter.setOutputChannel(reqChannel());
 		adapter.setConnectionFactory(serverCF());
 		return adapter;
 	}*/
@@ -90,75 +156,13 @@ public class IntegrationConfig{
 	
 	
 	
-	/*수신될 메시지의 채널 형태*/
-    @Bean
-    public MessageChannel checkChannel() {
-        //return new DirectChannel(); // p2p channel
-        return new PublishSubscribeChannel(); // p2p channel
-        
-    }
 
-    /*되돌려줄 메시지의 채널 형태 */
-    @Bean
-    public MessageChannel inputTaskChannel() {
-        return new DirectChannel(); // p2p channel
-    }
-
-    @Bean
-    public MessageChannel taskChannel() {
-        return new DirectChannel(); // p2p channel
-    }
-    
-  
-    @Transformer(inputChannel="inputTaskChannel", outputChannel="taskChannel")
-	public String convert(String str) {
-    //	TaskUtil taskUtil = new TaskUtil(5);
-    //taskUtil.start();
-    	
-		String result = str;
-		System.out.println("second. result: " + result);
-		return result;
-		
-	}  
-   
-	@Transformer(inputChannel="checkChannel", outputChannel="inputTaskChannel")
-	public String convert(byte[] bytes) {
-		String result = new String(bytes);
-		System.out.println("convert. result: " + result);
-		return result;
-		
-	}    
-	
-	//@Bean 
-	
-	@ServiceActivator(inputChannel="taskChannel")
-	public String taskRunner(String str) {
-		Runnable runnable = new Runnable() {
-			
-			@Override
-			public void run() {
-				for(int i=0;i<1000000;i++) {
-					System.out.println("i running taskSc: " + str);
-				}
-				
-			}
-		};
-		Calendar c = Calendar.getInstance();
-		c.setTime(new Date());	
-		c.add(Calendar.MILLISECOND, 200); // 동시 발송시 1초식 딜레이를 준다 교착상태 방지용 
-		
-		taskScheduler.schedule(runnable,c.getTime());
-		
-			
-		return "1234"+str;
-	}
-	
 	
   /*
    	@Bean
    public GatewayProxyFactoryBean gateway(	) {	
 	GatewayProxyFactoryBean gateway = new GatewayProxyFactoryBean(NoAnnotationsAllowed.class);
-       gateway.setDefaultRequestChannelName("checkChannel");
+       gateway.setDefaultRequestChannelName("reqChannel");
       
        return gateway;
    }
